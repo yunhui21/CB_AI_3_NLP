@@ -78,7 +78,31 @@ plt.plot(range(len(d2)), d2, 'g')
 
 # 문제
 # iris 파일ㅇ르 읽어서 출력하세요.
-iris = pd.read_csv('data/iris(150).csv')
+iris = pd.read_csv('data/iris(150).csv', index_col=0)
 iris.info()
-print()
+print(iris)
+# index, columns,:잘 사용하지 않는다,  values; 중요한 값이다.
+print(iris.index)
+print(iris.columns)
+print(iris.values) # 넘퍼이다.
+
+# 문제
+# 데이터프레임에서 숫자와 문자열의 2개로 분ㄹ하세요.
+x = iris.values[:, :-1]
+print(x.shape)
+y = iris.values[:, -1] # (150,)
+y = iris.values[:, -1:] # (150,1) 가장 일반적
+print(y.shape)
+
+
+y = iris.Species # series
+y = iris.Species.values # numpy로 변환
+y = iris.Species.values.reshape(-1, 1)
+
+iris2 = iris.drop(['Species'], axis=1)
+print(iris2)
+
+x = iris2.values
+print(x.shape, y.shape)
+
 

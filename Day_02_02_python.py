@@ -55,4 +55,24 @@ c[[0, 1, 2, 3,4], [0, 1, 2, 3,4]] = 2
 c[range(5), list(reversed(range(5)))] = 2
 print(c)
 
+# c[0, [0, -1]] = 3
+# c[1, [1, -2]] = 3
+c[[0,1], [[0,1], [-1, -2]]] = 3
+print()
+
+d = [ 1, 4, 2, 7, 6, 9, 8]
+d1 = np.random.choice(d, 5)
+d2 = np.random.choice(d, 5)
+print(d1)
+print(d2)
+
+plt.subplot(1, 2, 1)
+plt.plot(range(len(d1)), d1, 'r')
+
+# plt.figure() # 별도의 그래프가 그려진다.
+plt.subplot(1, 2, 2)
+plt.plot(range(len(d2)), d2, 'g')
+# plt.show()
+
+# data isris.csv, ai-times.tstory.com
 

@@ -76,3 +76,9 @@ plt.plot(range(len(d2)), d2, 'g')
 
 # data isris.csv, ai-times.tstory.com
 
+# 문제
+# iris 파일ㅇ르 읽어서 출력하세요.
+iris = pd.read_csv('data/iris(150).csv')
+iris.info()
+print()
+

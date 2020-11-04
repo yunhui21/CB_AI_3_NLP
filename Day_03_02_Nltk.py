@@ -71,7 +71,47 @@ def tokenize():
     print(nltk.tokenize.regexp_tokenize(moby, r'[A-Za-z0-9]+')) # 숫자 찾기
     print(nltk.tokenize.regexp_tokenize(moby, r'[A-Za-z0-9가-힣]+')) # 한글 찾기
 
+def stemming():
+    words = ['lives', 'dies', 'flies', 'died']
+
+    st = nltk.stem.PorterStemmer() #
+    print(st.stem('lives'))
+
+    # 문제
+    # words 에 포함된 모든 단어의 어근(어간)을 출력하세요.
+    print([w for w in words])
+    print([st.stem(w) for w in words]) # ['live', 'die', 'fli', 'die']
+
+    st = nltk.stem.LancasterStemmer() # porterstemmer()
+    print([st.stem(w) for w in words]) # ['liv', 'die', 'fli', 'died']
+
+def grams():
+    text = 'you deliver that which is not true'
+    tokens = nltk.tokenize.word_tokenize(text)
+    print(tokens) # ['you', 'deliver', 'that', 'which', 'is', 'not', 'true']
+
+    # book desk : 관련성을 다질 수 있는가? 동시발생을 따져 본다.
+
+    # 문제
+    # 토큰에서 3단어씩 순서대로 묶어 보세요.
+    # ['you', 'deliver', 'that', 'which', 'is', 'not', 'true']
+    # ('you', 'deliver', 'that')('deliver', 'that', 'which')...5개
+    # g = [i for i in range(len(tokens)-2)]
+    # g = [(tokens[i],tokens[i+1], tokens[i+2]) for i in range(len(tokens)-2)]
+    g = [(tokens[i:i+3]) for i in range(len(tokens)-2)]
+    print(g)
+    print(*g)
+    print(*g, sep = '\n')
+    print('-'*15)
+
+    print(tuple(nltk.bigrams(tokens)))   # 2개
+    print(tuple(nltk.trigrams(tokens)))  # 3개
+    print(tuple(nltk.ngrams(tokens, 5)), sep='\n') # 5개
 
 # load_datasets()
 # corpus()
-tokenize()
+# tokenize()
+# stemming()
+grams()
+
+# 빈도파악, 피쳐엔지니어링

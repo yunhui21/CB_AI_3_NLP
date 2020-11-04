@@ -55,6 +55,10 @@ print(a3)
 # 문제 02
 # 숫자12345를 앞에서 만든 리스트에 연동하세요.
 b = '12345'
+print('hello' + '12345')
+print(list('hello' + '12345'))
+print(list('hello' + str(12345)))
+
 # b1 = [c for c in b]
 b1 = [int(i) for i in '12345']
 c1 = a1 + b1

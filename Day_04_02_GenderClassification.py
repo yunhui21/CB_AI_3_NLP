@@ -131,7 +131,7 @@ def make_feature_4(name):
 
 
 def make_feature_5(name):
-    feature = {'suffix_1': name[-1], 'suffix_2': name[-2:]}
+    feature = {'suffix_1': name[-1], 'suffix_2': name[-2:]} # 26, 26 500개 정도 되는 종류로 구분
     return feature
 
 
@@ -155,7 +155,7 @@ def gender_basic(make_feature):
 
     # 문제
     # Neo와 Trinity에 대해 남자 이름인지 여자 이름인지 알려주세요
-    # print(clf.classify({'last_letter': 'o'}))
+    # print(clf.classify({'last_letter': 'o'})) 딕셔너리형태
     # print(clf.classify(make_feature('Neo')))
     # print(clf.classify(make_feature('Trinity')))
 

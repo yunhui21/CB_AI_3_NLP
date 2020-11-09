@@ -2,6 +2,7 @@
 import nltk         # natural language toolkit
 
 # 데이터 -> 코퍼스 -> 토큰화 -> 어간 -> 품사
+
 # 사람은, 사람이, 사람에게, 사람의, 사람이라면, 사람일까, ...
 
 
@@ -50,7 +51,7 @@ def tokenize():
 def stemming():
     words = ['lives', 'dies', 'flies', 'died']
 
-    st = nltk.stem.PorterStemmer()
+    st = nltk.stem.PorterStemmer() # 학자에 따라서 다른게 해석하는 경우. 영어에만.
     print(st.stem('lives'))
 
     # 문제

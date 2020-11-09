@@ -31,6 +31,8 @@ print(stopwords)
 tokens = [w for w in tokens if w not in stopwords]
 tokens = [w for w in tokens if len(w) > 1]
 print(tokens[:10])
+print('-'*10)
+
 
 # 문제
 # 단어별 빈도를 딕셔너리에 저장하세요
@@ -65,7 +67,7 @@ def make_freq_2(tokens):
 
     return freq
 
-
+# @@@ 주요사용 01
 def make_freq_3(tokens):
     # return [tokens.count(t) for t in tokens]      # bad
     # return [tokens.count(t) for t in set(tokens)]
@@ -106,6 +108,7 @@ def make_freq_4(tokens):
 # print(freq)
 # print(freq['good'])
 
+# @@@ 주요사용 02
 freq = nltk.FreqDist(tokens)
 print(freq)
 print(freq['good'])

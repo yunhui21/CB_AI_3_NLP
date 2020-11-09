@@ -57,3 +57,4 @@ test_set = neg_data[800:] + pos_data[800:]
 
 clf = nltk.NaiveBayesClassifier.train(train_set)
 print('acc :', nltk.classify.accuracy(clf, test_set))
+

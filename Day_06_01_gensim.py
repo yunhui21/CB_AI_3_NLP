@@ -132,5 +132,47 @@ def show_doc2vec_1():
     print(embedding.wv['나는'])
     # [-0.04947044  0.00979599 -0.04026674  0.06795924  0.03817336]
 
+
+def show_word2vec_2():
+    # 단어간의 유사도로를 심기위해서 작업하는것.
+    r1 = nltk.corpus.movie_reviews.raw('neg/cv000_29416.txt')
+    r2 = nltk.corpus.movie_reviews.words('neg/cv000_29416.txt')
+    r3 = nltk.corpus.movie_reviews.sents('neg/cv000_29416.txt')
+
+    print(type(r1), r1[:5]) # str, <class 'str'> plot
+    print(type(r2), r2[:5]) # 1차원 리스트['plot', ':', 'two', 'teen', 'couples']
+    print(type(r3), r3[:5]) # 2차원 리스트[['plot', ':', 'two', 'teen', 'couples', 'go', 'to', 'a', 'church', 'party', ',', 'drink', 'and', 'then', 'drive', '.'],...]
+
+    sents = nltk.corpus.movie_reviews.sents() # movie_review의 모든 글을 갖고 온다.
+    model = gensim.models.Word2Vec(sents) # 사이즈를 전달하지 않으면 기본 100개
+
+    # 코사인 유사도: -1 ~ 1을 갖고 1에 가까워질수록 상관이 있다 없다를 환산.
+    # 유사도에서는 -값은 나오지 않는다.(실제로는 0~1)
+    print(model.wv.similarity('villain','hero')) # 0.63078755
+    # movie_reviews의 내용을 분석하여 상관관계를 알아냄
+    print(model.wv.similarity('kiss','love')) # 0.48729402
+    print(model.wv.similarity('man','woman')) # 0.8997636
+    print(model.wv.similarity('young','old')) # 0.5220507
+
+    print(model.wv.most_similar('apple'))
+    '''
+    [('schoolteacher', 0.9388002753257751), ('magazine', 0.9332031011581421), ('temple', 0.9275639057159424), ('federal', 0.9259456992149353), ('cliff', 0.92561936378479), ('card', 0.923042356967926), ('ant', 0.9225459098815918), ('shark', 0.9225031137466431), ('hunky', 0.9197518825531006), ('farmer', 0.9175907373428345)]
+    '''
+    print(model.wv.most_similar('popcorn'))
+    '''
+    [('laborious', 0.9312052130699158), ('tops', 0.9110299944877625), ('bold', 0.9085941314697266), ('slapped', 0.9008858799934387), ('operates', 0.8997060656547546), ('covers', 0.8986257910728455), ('varies', 0.8963039517402649), ('hyped', 0.8957540392875671), ('zone', 0.8955211639404297), ('circa', 0.8952146768569946)]
+    '''
+    # print('kiss' in model)
+    print('kiss' in model.wv) # True
+
+    print(model.wv['kiss']) # [-4.67256695e-01  1.69616640e-01 -2.22227015e-02 -2.01258153e-01 ...] 100개의 값으로 표현
+    print(model.wv['kiss'].shape) # (100,)
+
+
+
+
+
+
 # show_doc2vec()
-show_doc2vec_1()
+# show_doc2vec_1()
+show_word2vec_2()

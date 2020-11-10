@@ -49,6 +49,7 @@ def hamlet_1():
     values = [freq[name] for name in actor]
     print(values)
 
+    # 4. 빈도 그래프 형성
     plt.bar(actor, values)
     plt.show()
 

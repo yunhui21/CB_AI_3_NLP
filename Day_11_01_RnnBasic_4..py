@@ -24,7 +24,7 @@ def make_data(words):
 
 
 # dense + cross_entropy (앞에 함수 수정한거 없음)
-def rnn_word(words,loop_count):
+def rnn_basic_4(words,loop_count):
     x, y, vocab = make_data(words)
 
     batch_size, seq_len, n_classes = x.shape
@@ -70,4 +70,4 @@ def rnn_word(words,loop_count):
         print([''.join(vocab[arg]) for arg in preds_arg])
     sess.close()
 
-rnn_word(['tensor','yellow','coffee'], loop_count=100)
+rnn_basic_4(['tensor','yellow','coffee'], loop_count=100)

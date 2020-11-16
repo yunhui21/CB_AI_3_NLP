@@ -11,8 +11,6 @@ def show_sequence_loss(targets, logits):
 
     loss = tf.contrib.seq2seq.sequence_loss(logits=z, targets=y, weights=w)
 
-    # 요기 tfa 설치해야 함
-
     sess = tf.compat.v1.Session()
     print(sess.run(loss))
     sess.close()
@@ -44,20 +42,14 @@ show_sequence_loss([[2, 2, 2]],
 # dense : [[[0, 0, 1], [0, 0, 1], [0, 0, 1]]]
 
 
-# [                 # 1
-#     [             # 3
-#         [         # 2
+# [
+#     [
+#         [
 #             0.2,
 #             0.7
 #         ],
-#         [
-#             0.5,
-#             0.3
-#         ],
-#         [
-#             0.1,
-#             0.4
-#         ]
+#         [0.5, 0.3],
+#         [0.1, 0.4]
 #     ]
 # ]
 

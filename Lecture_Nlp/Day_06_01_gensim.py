@@ -104,38 +104,12 @@ def show_word2vec_1():
     print(embedding['나는'])
 
 
-def show_word2vec_2():
-    r1 = nltk.corpus.movie_reviews.raw('neg/cv000_29416.txt')       # str
-    r2 = nltk.corpus.movie_reviews.words('neg/cv000_29416.txt')     # 1차원 리스트
-    r3 = nltk.corpus.movie_reviews.sents('neg/cv000_29416.txt')     # 2차원 리스트
-
-    print(type(r1), r1[:5])
-    print(type(r2), r2[:5])
-    print(type(r3), r3[:5])
-
-    sents = nltk.corpus.movie_reviews.sents()
-    model = gensim.models.Word2Vec(sents)
-
-    # 코사인 유사도: -1 ~ 1 (실제로는 0 ~ 1)
-    print(model.wv.similarity('villain', 'hero'))
-    print(model.wv.similarity('man', 'woman'))
-    print(model.wv.similarity('sky', 'earth'))
-    print(model.wv.similarity('water', 'iron'))
-
-    print(model.wv.most_similar('apple'))
-    # [('raging', 0.9470874071121216), ('empire', 0.9344267845153809),
-    # ('waters', 0.9318031668663025), ('alliance', 0.9298103451728821),
-    # ('mafia', 0.9290547966957092), ('sand', 0.9285709261894226),
-    # ('cloud', 0.9284428358078003), ('iron', 0.9281488656997681),
-    # ('bull', 0.927939772605896), ('1984', 0.9275203943252563)]
-
-    # print('papa' in model)
-    print('papa' in model.wv)
-
-    print(model.wv['apple'])
-    print(model.wv['apple'].shape)
-
-
 # show_doc2vec()
-# show_word2vec_1()
-show_word2vec_2()
+show_word2vec_1()
+
+
+
+
+
+
+

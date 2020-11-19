@@ -19,6 +19,7 @@ def show_Jena():
     # plt.show()
     print(type(degc)) # <class 'numpy.ndarray'>
 
+    # baseline model
     print('mae:', np.mean(np.abs(degc[:-144]-degc[144:]))) # mae: 2.612549101228096
 
 
@@ -27,17 +28,18 @@ def rnn_jena():
     degc = jena['T (degC)'].values
     degc = degc[:1000]
 
-    seq_len = 144
+    seq_len = 144 * 3
     # stock에서 가져온 코드
 #   #------------------------------------#
-    rng = [i for i in range(len(degc) - seq_len)]  # +1 삭제(8번째가 y라서)
+    rng = range(len(degc) - seq_len)  # +1 삭제(8번째가 y라서)
 
-    x = [degc[s:s + seq_len] for s in rng]  # 2차원
-    y = [degc[s + seq_len] for s in rng]    # 1차원 column 1ro
+    x = [degc[s:s+seq_len] for s in rng]  # 2차원
+    y = [degc[s+seq_len] for s in rng]    # 1차원 column 1ro
 
     x, y = np.float32(x), np.float32(y)
     print(x.shape, y.shape) # (856, 144) (856,)
 
+    # 강제로 차원변경 (인자를 1개만 갖고와서 2차원이 생성 3차원으로 강제로 만들어준다...인자가 하나 더 있으면당연 3차원.
     x = x[:, :, np.newaxis]
     y = y.reshape(-1, 1)
     print(x.shape, y.shape) # (856, 144, 1) (856, 1)
@@ -58,11 +60,11 @@ def rnn_jena():
 
     hx = tf.layers.dense(outputs[:, -1, :], 1, activation=None)
 
-    loss_i = (hx-ph_y)**2
-    loss = tf.reduce_mean(loss_i)
+    loss_i = (hx-ph_y)**2 # mean square error
+    loss   = tf.reduce_mean(loss_i)
 
     optimizer = tf.train.AdamOptimizer(0.001)
-    train = optimizer.minimize(loss)
+    train     = optimizer.minimize(loss)
 
     sess = tf.compat.v1.Session()
     sess.run(tf.global_variables_initializer())
@@ -71,15 +73,17 @@ def rnn_jena():
     batch_size = 100 # 한번에 처리할 데이터개수
     n_iteration = len(x) // batch_size # epochs한번에 배치사이즈만큼의 횟수
 
+    indices = np.arange(len(x)) # 0 ~ 855 까지 일련번호 숫자.
 
     for i in range(epochs):
+        np.random.shuffle(indices) # 원본데이터는 시계열이지만 슬라이싱으로 작업하면서 데이터가 시계열이 아니게 되었다.
         total = 0
         for j in range(n_iteration): # 60000의 데이터 100으로 나누어
             n1 = j * batch_size         # 0, 100, 200, 300
             n2 = n1 + batch_size        # 100, 200, 300, 400
 
-            xx = x[n1:n2]
-            yy = y[n1:n2]
+            xx = x[indices[n1:n2]]
+            yy = y[indices[n1:n2]]
 
             sess.run(train, {ph_x: xx, ph_y: yy})
             total += sess.run(loss,  {ph_x:xx, ph_y:yy})
@@ -87,11 +91,10 @@ def rnn_jena():
         print(i, total/n_iteration )
 
     preds = sess.run(hx, {ph_x: x})
-    print('mae:', np.mean(np.abs(degc(preds-y)))) # mae: 2.612549101228096
+    print('mae:', np.mean(np.abs(preds-y))) # mae: 2.612549101228096
 
+    # shuffle 적용 mae: 0.74608696
     sess.close()
-
-
 
 
 # show_Jena()

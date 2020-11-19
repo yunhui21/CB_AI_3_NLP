@@ -119,7 +119,7 @@ def rnn_mnist_minibatch():
             sess.run(train, {ph_x: xx, ph_y: yy})
             total += sess.run(loss,  {ph_x:xx, ph_y:yy})
 
-        print(i, total/n_iteration ) # batc
+        print(i, total/n_iteration ) # batch
 
     preds = sess.run(z, {ph_x: x_test})
     print(preds.shape)

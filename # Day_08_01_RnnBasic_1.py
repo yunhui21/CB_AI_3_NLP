@@ -147,6 +147,4 @@ def rnn_basic():
     print(word[preds_arg])
     sess.close()
 
-
-# review_softmax()
 rnn_basic()

@@ -17,6 +17,16 @@ print(y_train.shape, y_test.shape)
 x_train = x_train.reshape(-1, 784)
 x_test  = x_test.reshape(-1, 784)
 
+print(np.min(x_train), np.max(x_train)) # 0 255
+
+# x_train = preprocessing.minmax_scale(x_train)
+# X_test  = preprocessing.minmax_scale(x_test)
+
+# 올바른 스케일링
+x_train = x_train / 255
+x_test = x_test / 255
+
+
 # 784->256->256->10
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(256, activation='relu'))
@@ -29,5 +39,5 @@ model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001),
               loss=tf.keras.losses.sparse_categorical_crossentropy,
               metrics=['acc'])
 
-model.fit(x_train, y_train, epochs=10, batch_size=100, verbose=2,
+model.fit(x_train, y_train, epochs=100, batch_size=100, verbose=2,
           validation_data=(x_test, y_test))

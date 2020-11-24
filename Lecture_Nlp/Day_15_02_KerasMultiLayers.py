@@ -16,11 +16,24 @@ print(y_train.shape, y_test.shape)  # (60000,) (10000,)
 x_train = x_train.reshape(-1, 784)
 x_test = x_test.reshape(-1, 784)
 
+print(np.min(x_train), np.max(x_train))     # 0 255
+
+# 피처별로 스케일링을 하기 때문에 버그의 소지가 있음
+# x_train = preprocessing.minmax_scale(x_train)
+# x_test = preprocessing.minmax_scale(x_test)
+
+# 올바른 스케일링
+x_train = x_train / 255
+x_test = x_test / 255
+
 # ----------------------------- #
 
+# 784 -> 256 -> 256 -> 10
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(256, activation='relu'))
+model.add(tf.keras.layers.Dropout(0.5))
 model.add(tf.keras.layers.Dense(256, activation='relu'))
+model.add(tf.keras.layers.Dropout(0.5))
 model.add(tf.keras.layers.Dense(10, activation='softmax'))
 
 model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001),
@@ -29,9 +42,3 @@ model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001),
 
 model.fit(x_train, y_train, epochs=10, batch_size=100, verbose=2,
           validation_data=(x_test, y_test))
-
-
-
-
-
-

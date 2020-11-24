@@ -150,19 +150,16 @@ def rnn_basic_1():
     print('-' * 30)
 
     preds = sess.run(hx)
-    print(preds)
-    print(preds.shape)      # (150, 3)
-
     preds_arg = np.argmax(preds, axis=1)
+
     print(preds_arg)
 
-    y_arg = np.argmax(y, axis=1)
-    print(y_arg)
+    word = 'enorst'
+    print([i for i in preds_arg])
+    print([word[i] for i in preds_arg])
 
-    equals = (preds_arg == y_arg)
-    print(equals)
-
-    print('acc :', np.mean(equals))
+    word = np.array(list('enorst'))
+    print(word[preds_arg])
     sess.close()
 
 

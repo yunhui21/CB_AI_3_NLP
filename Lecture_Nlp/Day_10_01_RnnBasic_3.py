@@ -74,6 +74,8 @@ def rnn_basic_3_1():
 
 # 문제
 # 입력된 단어를 x, y, vocab으로 변환하는 함수를 만드세요
+# x데이터는 원핫 벡터, y 데이터는 단순 인코딩
+# word -> 인덱스로 변환 -> x와 y로 분할 -> x를 원핫 벡터로 변환
 # 'tensor' ->
 # [5, 0, 1, 4, 2, 3] ->
 # [5, 0, 1, 4, 2], [0, 1, 4, 2, 3] ->
@@ -103,8 +105,10 @@ def make_data_2(word):
     y = indices[1:]
     print(x, y)     # [5, 0, 1, 4, 2] [0, 1, 4, 2, 3]
 
-    onehot = np.zeros([len(vocab), len(vocab)], dtype=np.int32)
-    onehot[range(len(vocab)), range(len(vocab))] = 1
+    # onehot = np.zeros([len(vocab), len(vocab)], dtype=np.int32)
+    # onehot[range(len(vocab)), range(len(vocab))] = 1
+
+    onehot = np.eye(len(vocab), dtype=np.int32)
     print(onehot)
     print()
 
@@ -218,10 +222,5 @@ def rnn_basic_3_3(word, loop_count):
 # rnn_basic_3_2('hello')
 
 # rnn_basic_3_3('tensor', loop_count=100)
-rnn_basic_3_3('hello', loop_count=100)
-
-
-
-
-
-
+# rnn_basic_3_3('hello', loop_count=100)
+# rnn_basic_3_3('deep learning', loop_count=100)

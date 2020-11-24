@@ -189,8 +189,12 @@ def softmax_regression_iris():
     iris = pd.read_csv('data/iris(150).csv', index_col=0)
     print(iris)
 
-    x = iris.values[:, :-1]
-    y = preprocessing.LabelEncoder().fit_transform(iris.Species)
+    # validation_split을 사용할 때, 그룹화된 배열을 섞지 않으면 결과 안 나옴.
+    iris = iris.values
+    np.random.shuffle(iris)
+
+    x = iris[:, :-1]
+    y = preprocessing.LabelEncoder().fit_transform(iris[:, -1])
     print(x.shape, y.shape)     # (150, 4) (150,)
     print(x.dtype, y.dtype)     # object int64
 
@@ -204,18 +208,10 @@ def softmax_regression_iris():
                   loss=tf.keras.losses.sparse_categorical_crossentropy,
                   metrics=['acc'])
 
-    model.fit(x, y, epochs=100, verbose=2)
+    # 문제
+    # validation_split 옵션에 0.3을 주었을 때, 제대로 된 정확도가 나오도록 수정하세요
+    model.fit(x, y, epochs=100, verbose=2, validation_split=0.3)
     # print(model.evaluate(x, y, verbose=0))
-
-    # preds = model.predict(x)
-    # print(preds)
-    #
-    # preds_arg = np.argmax(preds, axis=1)
-    # y_arg = np.argmax(y, axis=1)
-    # print(preds_arg)
-    # print(y_arg)
-    #
-    # print('acc :', np.mean(preds_arg == y_arg))
 
 
 # logistic_regression()

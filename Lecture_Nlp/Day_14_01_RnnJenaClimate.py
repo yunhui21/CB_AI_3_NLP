@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 # import tensorflow as tf           # 1.14 버전
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf   # 2.x 버전
 tf.disable_eager_execution()
 
 # 문제
@@ -29,7 +29,7 @@ def jena_regression():
 
     hx = w * x + b
 
-    loss_i = (hx - y) ** 2
+    loss_i = (hx - y) ** 2          # mse
     loss = tf.reduce_mean(loss_i)
 
     optimizer = tf.compat.v1.train.AdamOptimizer(0.1)

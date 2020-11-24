@@ -60,7 +60,8 @@ def simple_rnn():
     # x_train, x_test, y_train, y_test = model_selection.train_test_split(x, y, train_size=0.6)
 
     model = tf.keras.Sequential()
-    model.add(tf.keras.layers.SimpleRNN(7, return_sequences=True))
+    model.add(tf.keras.Input(shape=[7,4]))
+    model.add(tf.keras.layers.SimpleRNN(11, return_sequences=True))
     model.add(tf.keras.layers.Dense(1))
 
     model.compile(optimizer=tf.keras.optimizers.SGD(),

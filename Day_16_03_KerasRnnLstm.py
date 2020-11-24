@@ -11,8 +11,8 @@ def get_data(seq_len=100, size=3000):
     np.random.seed(23)
     x, y = [], []
     for _ in range(size):
-        values = np.random.rand(seq_len)
-        i0, i1 = np.random.choice(seq_len, 2, replace=False)
+        values = np.random.rand(seq_len)    # 0~1까지의 값
+        i0, i1 = np.random.choice(seq_len, 2, replace=False) # 중북된것없이.
         # print(values)
 
         # print(values)
@@ -49,7 +49,6 @@ def simple_rnn():
 def lstm():
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Input(shape=[100,2]))
-
     model.add(tf.keras.layers.LSTM(30, return_sequences=True))
     model.add(tf.keras.layers.LSTM(30, return_sequences=False))
     model.add(tf.keras.layers.Dense(1))
@@ -65,7 +64,15 @@ def gru():
     model.add(tf.keras.layers.Dense(1))
 
     return model
-
+def show_history(history):
+    # 문제
+    # history 객체에 들어 있는 값으로 그래프를 그려주세요.
+    plt.plot(history.history['loss'], 'r--', label= 'loss')
+    plt.plot(history.history['val_loss'], 'g--', label= 'val_loss')
+    plt.legend()
+    plt.xlabel('Epochs')
+    plt.title('RNN')
+    plt.show()
 
 def show_model(model_func):
 
@@ -80,24 +87,33 @@ def show_model(model_func):
     model.compile(optimizer=tf.keras.optimizers.Adam(),
                   loss=tf.keras.losses.mse)
 
-    model.fit(x_train, y_train, epochs=30, verbose=2, batch_size=32, validation_split=0.2)
-    preds = model.predict(x_test)
+    history = model.fit(x_train, y_train, epochs=30, verbose=2, batch_size=32, validation_split=0.2)
+    print(history)
+    print(history.history)
+    # {'loss': [0.059102512896060944, 0.05276212841272354, 0.052386924624443054],
+    #  'val_loss': [0.052296195179224014, 0.05189915746450424, 0.052378978580236435]}
+
+
+    # preds = model.predict(x_test)
     # print(preds.shape) # (600, 100, 1)
 
-    preds = preds.reshape(-1)
-    print('acc:', np.mean(np.abs(preds - y_test) <= 0.04))
+    # preds = preds.reshape(-1)
+    # print('acc:', np.mean(np.abs(preds - y_test) <= 0.04))
+    show_history(history)
 
-show_model(simple_rnn())
-# show_model(lstm())
-# show_model(gru())
+
+# show_model(simple_rnn)
+# show_model(lstm)
+show_model(gru())
 
 # simple_rnn
-# Total params: 2,851
-# Trainable params: 2,851
-# Non-trainable params: 0
 # Epoch 30/30
 # 60/60 - 1s - loss: 0.0501 - val_loss: 0.0506
 # acc: 0.11666666666666667
+# Total params: 2,851
+# Trainable params: 2,851
+# Non-trainable params: 0
+
 
 
 # lstm()

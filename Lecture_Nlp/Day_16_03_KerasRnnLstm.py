@@ -69,6 +69,15 @@ def gru():
     return model
 
 
+def show_history(history):
+    plt.plot(history.history['loss'], 'r--', label='loss')
+    plt.plot(history.history['val_loss'], 'g--', label='val_loss')
+    plt.legend()
+    plt.xlabel('Epochs')
+    plt.title('RNN')
+    plt.show()
+
+
 def show_model(model_func):
     x_train, x_test, y_train, y_test = get_data(seq_len=100, size=3000)
     # print(x_train.shape, x_test.shape)  # (2400, 100, 2) (600, 100, 2)
@@ -76,23 +85,32 @@ def show_model(model_func):
 
     model = model_func()
     model.summary()
-    return
 
     model.compile(optimizer=tf.keras.optimizers.Adam(),
                   loss=tf.keras.losses.mse)
 
-    model.fit(x_train, y_train, epochs=30, verbose=2, batch_size=32, validation_split=0.2)
+    # history 저장할 때는 pickle 사용
+    history = model.fit(x_train, y_train, epochs=30, verbose=2, batch_size=32, validation_split=0.2)
 
-    preds = model.predict(x_test)
-    # print(preds.shape)
+    # preds = model.predict(x_test)
+    # # print(preds.shape)
+    #
+    # preds = preds.reshape(-1)
+    # print('acc :', np.mean(np.abs(preds - y_test) <= 0.04))
 
-    preds = preds.reshape(-1)
-    print('acc :', np.mean(np.abs(preds - y_test) <= 0.04))
+    print(history)
+    print(history.history)
+    # {'loss': [0.0905328020453453, 0.05543442815542221, 0.053770747035741806],
+    # 'val_loss': [0.054574452340602875, 0.05266903340816498, 0.05268887057900429]}
+
+    # 문제
+    # history 객체에 들어있는 값으로 그래프를 그려주세요
+    show_history(history)
 
 
-show_model(simple_rnn)
+# show_model(simple_rnn)
 # show_model(lstm)
-# show_model(gru)
+show_model(gru)
 
 # simple_rnn
 # Epoch 30/30
@@ -108,5 +126,3 @@ show_model(simple_rnn)
 # Epoch 30/30
 # 60/60 - 3s - loss: 7.7123e-04 - val_loss: 9.3915e-04
 # acc : 0.84
-
-# history + 그래프 표시

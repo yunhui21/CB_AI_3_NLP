@@ -25,6 +25,7 @@ def get_data():
     # print(x)
     # print(y)
 
+    # broadcast 연산 적용
     # a = np.float32([0.1, 0.2, 0.3, 0.4])
     # b = np.arange(0, 1, 0.1).reshape(-1, 1)
     # print(a + b)
@@ -58,8 +59,10 @@ def simple_rnn():
     # print(x.shape, y.shape)     # (1, 7, 4) (1, 7)
 
     model = tf.keras.Sequential()
-    model.add(tf.keras.layers.SimpleRNN(7, return_sequences=True))
+    model.add(tf.keras.Input(shape=[7, 4]))
+    model.add(tf.keras.layers.SimpleRNN(11, return_sequences=True))
     model.add(tf.keras.layers.Dense(1))
+    model.summary()
 
     model.compile(optimizer=tf.keras.optimizers.SGD(),
                   loss=tf.keras.losses.mse)
@@ -75,6 +78,6 @@ def simple_rnn():
     print(preds - y)
 
 
-simple_regression()
+# simple_regression()
 simple_rnn()
 

@@ -1,4 +1,4 @@
-# Day_08_01_RnnBasic_1.py
+Day_08_01_RnnBasic_1.py
 import tensorflow as tf
 import csv
 import numpy as np

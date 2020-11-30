@@ -1,7 +1,6 @@
 # Day_18_02_KerasRnnNietzscheHelper.py
 import tensorflow as tf
 import numpy as np
-import pandas as pd
 import collections
 
 np.set_printoptions(precision=2, floatmode='fixed', suppress=True)

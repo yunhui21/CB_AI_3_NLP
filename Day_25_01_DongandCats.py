@@ -235,7 +235,9 @@ def model_3_pretrained():
             y.append(yy)
 
         x = np.concatenate(x, axis=0)
-        y = np.concatenate(y, newshape = (-1,))
+        y = np.concatenate(y, axis=0)
+
+        # y = np.concatenate(y, newshape = (-1,))
         # print(x.shape, y.shape)
 
         return x.reshape(-1, 4 * 4 * 512), y #

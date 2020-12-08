@@ -1,0 +1,8 @@
+print(int('10'))
+print(int(10))
+print(int(3.3))
+print(int(5/2))
+print(True and True)
+print(True and False)
+print(True or True)
+print(True or False)

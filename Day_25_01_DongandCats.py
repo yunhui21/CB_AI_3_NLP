@@ -245,19 +245,19 @@ def model_3_pretrained():
     conv_base = tf.keras.applications.VGG16(
         include_top=False,
         input_shape=[150, 150, 3])
-    conv_base.summary()
+    # conv_base.summary()
 
     # return
     batch_size = 32
     data_gen = ImageDataGenerator(rescale=1/255)
 
-    # x_train, y_train = extract_features(conv_base, data_gen, 'dogs_and_cats/small/train', 2000, batch_size)
-    # x_valid, y_valid = extract_features(conv_base, data_gen, 'dogs_and_cats/small/validation', 1000, batch_size)
-    # x_test, y_test   = extract_features(conv_base, data_gen, 'dogs_and_cats/small/test', 1000, batch_size)
+    x_train, y_train = extract_features(conv_base, data_gen, 'DogsandCats/small/train', 2000, batch_size)
+    x_valid, y_valid = extract_features(conv_base, data_gen, 'DogsandCats/small/validation', 1000, batch_size)
+    x_test, y_test   = extract_features(conv_base, data_gen, 'DogsandCats/small/test', 1000, batch_size)
 
-    x_train, y_train = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/train', 2000, batch_size)
-    x_valid, y_valid = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/validation', 1000, batch_size)
-    x_test, y_test   = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/test', 1000, batch_size)
+    # x_train, y_train = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/train', 2000, batch_size)
+    # x_valid, y_valid = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/validation', 1000, batch_size)
+    # x_test, y_test   = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/test', 1000, batch_size)
 
 
     model = tf.keras.Sequential()
@@ -271,7 +271,7 @@ def model_3_pretrained():
                   metrics=['acc'])
     history = model.fit(
         x_train, y_train,
-        epochs = 10,
+        epochs = 100,
         batch_size=batch_size,
         verbose=2,
         validation_data=(x_valid, y_valid)
@@ -301,13 +301,13 @@ def model_4_pretrained_augmentation():
 
     batch_size = 32
     train_flow = train_gen.flow_from_directory(
-        'DogandCats/small/train',
+        'DogsandCats/small/train',
         batch_size=batch_size,
         target_size=(150, 150),
         class_mode='binary'
     )
     valid_flow = valid_gen.flow_from_directory(
-        'DogandCats/small/validation',
+        'DogsandCats/small/validation',
         batch_size=batch_size,
         target_size=(150, 150),
         class_mode='binary'
@@ -357,9 +357,9 @@ def model_4_pretrained_augmentation():
 
 
 # model_1_baseline()
-model_2_augmentation()
+# model_2_augmentation()
 # model_3_pretrained()
-# model_4_pretrained_augmentation()
+model_4_pretrained_augmentation()
 
 
 # load_history(version=1)

@@ -9,6 +9,7 @@ def and_sequential():
             [1,0,0],
             [0,1,0],
             [1,1,1]]
+
     data = np.int32(data)
     x = data[:, :-1]
     y = data[:, -1:]
@@ -172,10 +173,10 @@ def and_functional_multi_inout():
 
     # 2번
     input1  = tf.keras.layers.Input(shape=[1])
-    output1 = tf.keras.layers.Dense(5, activation='relu', name = 'output1')(input1)
+    output1 = tf.keras.layers.Dense(5, activation='relu')(input1)
 
     input2  = tf.keras.layers.Input(shape=[1])
-    output2 = tf.keras.layers.Dense(5, activation='relu', name = 'output2')(input2)
+    output2 = tf.keras.layers.Dense(5, activation='relu')(input2)
 
     concat  = tf.keras.layers.concatenate([input1, input2], axis=1)
 
@@ -193,7 +194,7 @@ def and_functional_multi_inout():
     print('acc:', model.evaluate([x1,x2],[y1,y2], verbose=0))
     print(history.history.keys())
     # dict_keys(['loss', 'dense_2_loss', 'dense_3_loss', 'dense_2_acc', 'dense_3_acc'])
-
+    # dict_keys(['loss', 'output3_loss', 'output4_loss', 'output3_acc', 'output4_acc'])
 
     print(model.predict([x1,x2]))
 

@@ -10,11 +10,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 def get_model_name(version):
     filename = 'dogcat_small_{}.h5'.format(version)
-    return os.path.join('dogs_and_cats_model', filename)
+    return os.path.join('dogs_and_cats', filename)
 
 def get_history_name(version):
     filename = 'dogcat_small_{}.history'.format(version)
-    return os.path.join('dogs_and_cats_model', filename)
+    return os.path.join('dogs_and_cats', filename)
 
 def show_history(history, version):
     plt.subplot(1, 2, 1)
@@ -49,7 +49,7 @@ def load_model(version):
     test_gen = ImageDataGenerator(rescale=1/255)
 
     test_flow = test_gen.flow_from_directory(
-        'dogs_and_cats_model/small/test',
+        'Dogsandcats/small/test',
         batch_size=1000,
         target_size=(150, 150),
         class_mode='binary'
@@ -200,9 +200,45 @@ def model_3_pretrained():
             n1 = ii * batch_size
             n2 = n1 + batch_size
 
-            x[n1:n2] = conv_base.predict(xx) # 피쳐를 만드는 핵심코드
+            if n2 > sample_count:
+                needed = sample_count - n1 # 삐져나간만큼
+                x[n1:] = conv_base.predict(xx[:needed])
+                y[n1:] = yy[:needed]
+                break
+
+
+
+            x[n1:n2] = conv_base.predict(xx) # 피쳐를 만드는 핵심코드, predict를 통과한 값이 어떤 의미를 갖는지 알아야 한다.
             y[n1:n2] = yy
-        return x.reshape(-1, 4 * 4 * 512), y
+        return x.reshape(-1, 4 * 4 * 512), y #
+
+    def extract_features_2(conv_base, data_gen, directory, sample_count, batch_size):
+
+        flow = data_gen.flow_from_directory(
+            directory,
+            target_size=(150, 150),
+            batch_size=batch_size,
+            class_mode='binary'
+        )
+        x, y = [], []
+        n_loops = sample_count // batch_size # 남는 자투리는 다시 처리를 해본다.
+        for ii, (xx, yy) in enumerate(flow):
+
+            if ii >= n_loops:
+                # print(n_loops * batch_size)
+                needed = sample_count - n_loops * batch_size
+                x.append(conv_base.predict(xx[:needed]))
+                y.append(yy[:needed])
+                break
+
+            x.append(conv_base.predict(xx)) # 피쳐를 만드는 핵심코드, predict를 통과한 값이 어떤 의미를 갖는지 알아야 한다.
+            y.append(yy)
+
+        x = np.concatenate(x, axis=0)
+        y = np.concatenate(y, newshape = (-1,))
+        # print(x.shape, y.shape)
+
+        return x.reshape(-1, 4 * 4 * 512), y #
 
     conv_base = tf.keras.applications.VGG16(
         include_top=False,
@@ -213,9 +249,14 @@ def model_3_pretrained():
     batch_size = 32
     data_gen = ImageDataGenerator(rescale=1/255)
 
-    x_train, y_train = extract_features(conv_base, data_gen, 'dogs_and_cats_model/small/train', 2000, batch_size)
-    x_valid, y_valid = extract_features(conv_base, data_gen, 'dogs_and_cats_model/small/validation', 1000, batch_size)
-    x_test, y_test   = extract_features(conv_base, data_gen, 'dogs_and_cats_model/small/test', 1000, batch_size)
+    # x_train, y_train = extract_features(conv_base, data_gen, 'dogs_and_cats/small/train', 2000, batch_size)
+    # x_valid, y_valid = extract_features(conv_base, data_gen, 'dogs_and_cats/small/validation', 1000, batch_size)
+    # x_test, y_test   = extract_features(conv_base, data_gen, 'dogs_and_cats/small/test', 1000, batch_size)
+
+    x_train, y_train = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/train', 2000, batch_size)
+    x_valid, y_valid = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/validation', 1000, batch_size)
+    x_test, y_test   = extract_features_2(conv_base, data_gen, 'dogs_and_cats/small/test', 1000, batch_size)
+
 
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Input(shape=[4*4*512]))
@@ -236,7 +277,7 @@ def model_3_pretrained():
 
     # 모델을 저장하기는 하지만 다른 모델과 호환은 되지 않는다.(입력 모앙 다름)
     model.save(get_model_name(version=3))
-    save_history(history, version=3)
+    save_history(history, 3)
 
     print('acc:', model.evaluate(x_test, y_test))
 
@@ -276,7 +317,8 @@ def model_4_pretrained_augmentation():
     # )
     conv_base = tf.keras.applications.VGG16(
         include_top=False,
-        input_shape=[150, 150, 3])
+        # input_shape=[150, 150, 3]
+        )
     conv_base.trainable = False
 
     # for layer in conv_base.layers:
@@ -289,7 +331,7 @@ def model_4_pretrained_augmentation():
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Input(shape=[150, 150, 3]))
 
-    model.add(conv_base)
+    model.add(conv_base) # 통과하기전에 이미지 증식을 할수있다.
 
     model.add(tf.keras.layers.Flatten())
     model.add(tf.keras.layers.Dense(512, activation='relu'))
@@ -309,7 +351,7 @@ def model_4_pretrained_augmentation():
     )
 
     model.save(get_model_name(version=4))
-    save_history(history, version=4)
+    save_history(history, 4)
 
 
 # model_1_baseline()
@@ -323,7 +365,7 @@ def model_4_pretrained_augmentation():
 # load_history(version=3)
 # load_history(version=4)
 
-load_model(version=1)
+# load_model(version=1)
 # load_model(version=2)
 # load_model(version=3)
 # load_model(version=4)

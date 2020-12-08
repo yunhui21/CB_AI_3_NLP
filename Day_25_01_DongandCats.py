@@ -134,13 +134,13 @@ def model_2_augmentation():
 
     batch_size = 32
     train_flow = train_gen.flow_from_directory(
-        'dogs_and_cats_model/small/train',
+        'DogsandCats/small/train',
         batch_size=batch_size,
         target_size=(150, 150),
         class_mode='binary'
     )
     valid_flow = valid_gen.flow_from_directory(
-        'dogs_and_cats_model/small/validation',
+        'DogsandCats/small/validation',
         batch_size=batch_size,
         target_size=(150, 150),
         class_mode='binary'
@@ -301,13 +301,13 @@ def model_4_pretrained_augmentation():
 
     batch_size = 32
     train_flow = train_gen.flow_from_directory(
-        'dogs_and_cats_model/small/train',
+        'DogandCats/small/train',
         batch_size=batch_size,
         target_size=(150, 150),
         class_mode='binary'
     )
     valid_flow = valid_gen.flow_from_directory(
-        'dogs_and_cats_model/small/validation',
+        'DogandCats/small/validation',
         batch_size=batch_size,
         target_size=(150, 150),
         class_mode='binary'
@@ -357,7 +357,7 @@ def model_4_pretrained_augmentation():
 
 
 # model_1_baseline()
-# model_2_augmentation()
+model_2_augmentation()
 # model_3_pretrained()
 # model_4_pretrained_augmentation()
 

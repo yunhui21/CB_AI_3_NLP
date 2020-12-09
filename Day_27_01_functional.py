@@ -84,7 +84,7 @@ def and_functional_basic():
     #
     model = tf.keras.Model(input, output2)
     # model = tf.keras.Model(input, [output1, output2]) # cnn에서 컨롤루션 레이어 마지막을 갖고 오는경우
-
+    # 마지막에 전달되는 레이어가 relu, softmax를 통과한것이 아니어도 된다.
     # 4번
     # output  = tf.keras.layers.Dense(5, activation='relu')(input)# () 함수호출
     # output  = tf.keras.layers.Dense(1, activation='sigmoid')(output)
@@ -105,11 +105,14 @@ def and_functional_basic():
 
     w, b = dense1.weights
     print(w.shape, b.shape)  # (2, 5) (5,)
+    print(w.numpy())    # [[-0.86824113  0.78972137  0.44468692 -0.83966416 -0.57817185] [ 0.8687042   0.04831468  0.51178885  0.7728243  -0.31964815]]
+    print(b.numpy())    # [ 9.7868207e-05  2.6424896e-06 -4.4453430e-01  2.2409280e-04  0.0000000e+00]
+
 
     new_model = tf.keras.Model(model.input, dense1.output)
     preds = new_model.predict(x)
-    print(preds)
-    print(output2)
+    # print(preds)
+    # print(output2)
 
 
 def and_functional_multi_input():

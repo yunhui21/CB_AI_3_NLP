@@ -17,7 +17,7 @@ def apply_scaling(x):
 
 # 3번 정렬(원본순서유지)
 def apply_sort_1(x):
-
+    pass
 
 
 poker = pd.read_csv('data/train.csv', index_col=0)
@@ -29,6 +29,7 @@ y = poker.values[:, -1:]
 x = np.float32(x)
 # print(y.shape) # (25010, 1)
 
+# x = apply_scaling()
 # 스케일링은 엄청난 효과 발생
 # 2
 # x = preprocessing.scale(x)

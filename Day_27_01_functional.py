@@ -39,7 +39,7 @@ def xor_sequential():
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Input(shape=[2]))
 
-    model.add(tf.keras.layers.Dense(9, activation='relu'))
+    # model.add(tf.keras.layers.Dense(9, activation='relu'))
     model.add(tf.keras.layers.Dense(5, activation='relu'))
     model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
 
@@ -51,7 +51,7 @@ def xor_sequential():
     print('acc:', model.evaluate(x, y, verbose=0))
     print(model.predict(x))
 
-
+#
 def and_functional_basic():
     data = [[0, 0, 0],
             [1, 0, 1],
@@ -66,9 +66,9 @@ def and_functional_basic():
 
     # 1번 __call__의미를 이해하고 있어야 한다.
     # dense1  = tf.keras.layers.Dense(5, activation='relu')
-    # output1 = dense1.__call__(input)
+    # output1 = dense1.__call__(input) # 다음 함수에 전달값을 반환한다.
     # dense2  = tf.keras.layers.Dense(1, activation='sigmoid')
-    # output2 = dense2.__call__(output1)
+    # output2 = dense2.__call__(output1)# __call__을 넣지 않아도 호출된다.
 
     # 2번
     # dense1  = tf.keras.layers.Dense(5, activation='relu')
@@ -77,19 +77,20 @@ def and_functional_basic():
     # output2 = dense2(output1)
 
     # 3번
-    output1  = tf.keras.layers.Dense(5, activation='relu')(input)
+    output1  = tf.keras.layers.Dense(5, activation='relu')(input)# () 함수호출
+    # 생성자를 호출하는 클래스
     output2  = tf.keras.layers.Dense(1, activation='sigmoid')(output1)
 
     model = tf.keras.Model(input, output2)
+    model = tf.keras.Model(input, [output1, output2]) # cnn에서 컨롤루션 레이어 마지막을 갖고 오는경우
 
-    # model = tf.keras.Sequential()
-    # model.add()
+    # 4번
+    # output  = tf.keras.layers.Dense(5, activation='relu')(input)# () 함수호출
+    # output  = tf.keras.layers.Dense(1, activation='sigmoid')(output)
     #
-    # model.add(tf.keras.layers.Dense(9, activation='relu'))
-    # model.add(tf.keras.layers.Dense(5, activation='relu'))
-    # model.add()
+    # model = tf.keras.Model(input, output)
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01),
+    model.compile(optimizer=tf.keras.optimizers.SGD(lr=0.01),
                   loss=tf.keras.losses.binary_crossentropy,
                   metrics=['acc'])
 
@@ -100,14 +101,13 @@ def and_functional_basic():
 
 def and_functional_multi_input():
     data = [[0, 0, 0],
-            [1, 0, 1],
-            [0, 1, 1],
-            [1, 1, 0]]
-
+            [1, 0, 0],
+            [0, 1, 0],
+            [1, 1, 1]]
     data = np.int32(data)
+
     x1 = data[:, :1]
     x2 = data[:, 1:2]
-
     y = data[:, -1:]
 
     # 1번
@@ -125,11 +125,17 @@ def and_functional_multi_input():
     # 2번
     input1  = tf.keras.layers.Input(shape=[1])
     output1 = tf.keras.layers.Dense(5, activation='relu')(input1)
+    # model = tf.keras.Model(input1, output1)
+    # model.summary()
 
     input2  = tf.keras.layers.Input(shape=[1])
     output2 = tf.keras.layers.Dense(5, activation='relu')(input2)
+    # model = tf.keras.Model(input1, output1)
+    # model.summary()
+    # return
 
     concat  = tf.keras.layers.concatenate([input1, input2], axis=1)
+
     output3 = tf.keras.layers.Dense(1, activation='sigmoid')(concat)
 
     model = tf.keras.Model([input1, input2], output3)
@@ -179,10 +185,13 @@ def and_functional_multi_inout():
 
     concat  = tf.keras.layers.concatenate([input1, input2], axis=1)
 
-    output3 = tf.keras.layers.Dense(1, activation='sigmoid', name = 'output3')(concat)
-    output4 = tf.keras.layers.Dense(1, activation='sigmoid', name = 'output4')(concat)
+    output3 = tf.keras.layers.Dense(3, activation='relu', name = 'output3')(concat)
+    output4 = tf.keras.layers.Dense(1, activation='sigmoid', name = 'output4')(output3)
 
-    model = tf.keras.Model([input1, input2], [output3, output4])
+    output5 = tf.keras.layers.Dense(3, activation='relu', name = 'output5')(concat)
+    output6 = tf.keras.layers.Dense(1, activation='sigmoid', name = 'output6')(output5)
+
+    model = tf.keras.Model([input1, input2], [output4, output6])
     # model.summary()
 
     model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01),
@@ -200,5 +209,5 @@ def and_functional_multi_inout():
 # and_sequential()
 # xor_sequential()
 # and_functional_basic()
-# and_functional_multi_input()
-and_functional_multi_inout()
+and_functional_multi_input()
+# and_functional_multi_inout()

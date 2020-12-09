@@ -19,18 +19,20 @@ x = np.float32(x)
 # 스케일링은 엄청난 효과 발생
 # 2
 # x = preprocessing.scale(x)
+# loss가 안정적으로 떨어진다.
 
 # # 원핫 벡터 변환하면 엄청난 효과 발생
 # enc = preprocessing.LabelBinarizer()
 
 # # 3
+# #
 # # x_onehot = []
 # # for i in range(x.shape[1]):
 # #     xx = enc.fit_transform(x[:, i])
 # #     x_onehot.append(xx)
 # x_onehot=[enc.fit_transform(x[: i])for i in range(x.shape[1])]
 # x = np.hstack(x_onehot)
-# print(x.shape)
+# print(x.shape) 85개의 피쳐로 늘어난다.
 
 # 4 정렬
 # # x : (25010, 10)
@@ -38,11 +40,9 @@ x = np.float32(x)
 # x = [np.reshape(i, [5, 2]) for i in x]
 # # x = [sorted(xx, key=lambda t: t[1]) for xx in x]
 # x = [sorted(xx, key=itemgetter(1)) for xx in x]
-#
 # x = [np.reshape(xx, [-1,]) for xx in x]
 # x = np.int32(x)
 # # print(x[:3])
-# # exit(-1)
 
 # 5 정렬
 # cards = x[:, 1::2]
@@ -52,6 +52,8 @@ x = np.float32(x)
 # print(cards[:5])
 
 # 피쳐추가
+# suits, straits 전체 비율 20%
+# 피쳐를 추가해서 성능을 올리는 방법을 알 수 있다.
 # straits = []
 # for r in x:
 #     d = sorted(r[1::2])

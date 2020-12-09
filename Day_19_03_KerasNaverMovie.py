@@ -68,7 +68,7 @@ def show_freq_dist(documents):
 def show_prediction(new_review, model, tokenizer, max_len, one_hot):
     pass
 
-def rnn_model_onehost():
+def rnn_model_onehot():
     pass
 
 def rnn_model_embedding():

@@ -71,18 +71,18 @@ def and_functional_basic():
     # output2 = dense2.__call__(output1)# __call__을 넣지 않아도 호출된다.
 
     # 2번
-    # dense1  = tf.keras.layers.Dense(5, activation='relu')
-    # output1 = dense1(input)
-    # dense2  = tf.keras.layers.Dense(1, activation='sigmoid')
-    # output2 = dense2(output1)
+    dense1  = tf.keras.layers.Dense(5, activation='relu')
+    output1 = dense1(input)
+    dense2  = tf.keras.layers.Dense(1, activation='sigmoid')
+    output2 = dense2(output1)
 
     # 3번
-    output1  = tf.keras.layers.Dense(5, activation='relu')(input)# () 함수호출
-    # 생성자를 호출하는 클래스
-    output2  = tf.keras.layers.Dense(1, activation='sigmoid')(output1)
-
+    # output1  = tf.keras.layers.Dense(5, activation='relu')(input)# () 함수호출
+    # # 생성자를 호출하는 클래스
+    # output2  = tf.keras.layers.Dense(1, activation='sigmoid')(output1)
+    #
     model = tf.keras.Model(input, output2)
-    model = tf.keras.Model(input, [output1, output2]) # cnn에서 컨롤루션 레이어 마지막을 갖고 오는경우
+    # model = tf.keras.Model(input, [output1, output2]) # cnn에서 컨롤루션 레이어 마지막을 갖고 오는경우
 
     # 4번
     # output  = tf.keras.layers.Dense(5, activation='relu')(input)# () 함수호출
@@ -97,6 +97,18 @@ def and_functional_basic():
     model.fit(x, y, epochs=1000, verbose=2)
     print('acc:', model.evaluate(x, y, verbose=0))
     print(model.predict(x))
+
+
+    print(dense1)
+    print(dense1.weights)
+
+    w, b = dense1.weights
+    print(w.shape, b.shape)  # (2, 5) (5,)
+
+    new_model = tf.keras.Model(model.input, dense1.output)
+    preds = new_model.predict(x)
+    print(preds)
+    print(output2)
 
 
 def and_functional_multi_input():
@@ -206,8 +218,11 @@ def and_functional_multi_inout():
 
     print(model.predict([x1,x2]))
 
+    print(output5)
+    print(output5.weights)
 # and_sequential()
 # xor_sequential()
-# and_functional_basic()
-and_functional_multi_input()
+
+and_functional_basic()
+# and_functional_multi_input()
 # and_functional_multi_inout()

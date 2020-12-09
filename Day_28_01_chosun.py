@@ -60,7 +60,7 @@ def model_chosun_1():
     # print(y[:10])   # [47, 155, 166, 46, 30, 145, 34, 207, 46, 149]
 
     model = tf.keras.Sequential([
-        tf.keras.layers.Input(shape=[seq_len]),
+        tf.keras.layers.Input([seq_len]),
         tf.keras.layers.Embedding(vocab_size, 100),  # 입력(2차원), 출력(3차원)
         tf.keras.layers.LSTM(128, return_sequences=False),
         tf.keras.layers.Dense(vocab_size, activation='softmax'),
@@ -74,8 +74,8 @@ def model_chosun_1():
     model.fit(x, y, epochs=10, batch_size=128, verbose=2)
     model.save('data/chosun_model_1.h5')
 
-    # sent = '동헌에 나가 활을 쐈다'
-    # act_like_writer_1(sent, model, word2idx, idx2word, seq_len)
+    sent = '동헌에 나가 활을 쐈다'
+    act_like_writer_1(sent, model, word2idx, idx2word, seq_len)
     # act_like_writer_2(sent, model, word2idx, idx2word, seq_len)
 
 
@@ -107,6 +107,8 @@ def act_like_writer_1(sent, model, word2idx, idx2word, seq_len):
         # 가장 큰 값을
 
     print(current)
+    # ['동헌에', '나가', '활을', '쐈다', '백성', '듣고', '생겼다', '양무', .....
+
 
 
 def act_like_writer_2(sent, model, word2idx, idx2word, seq_len):

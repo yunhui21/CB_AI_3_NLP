@@ -6,6 +6,19 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing,model_selection
 from operator import itemgetter
+# 1번. 스케일링
+def apply_scaling(x):
+    return preprocessing.scale(x)
+
+# 2번 원핫벡터
+    # suits: 4가지 * 5 = 20
+    # cards:
+
+
+# 3번 정렬(원본순서유지)
+def apply_sort_1(x):
+
+
 
 poker = pd.read_csv('data/train.csv', index_col=0)
 # print(poker)

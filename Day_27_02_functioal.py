@@ -45,7 +45,7 @@ model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.1),
 # print(y.shape)      # (3, 20, 1)
 # history = model.fit(x, y, epochs=1000, verbose=2)
 # exit(-1)
-y1, y2, y3 = y[:, :1], y[:, 1:2], y[:,2:3]
+y1, y2, y3 = y[:, :1], y[:, 1:2], y[:,2:]
 history = model.fit(x, [y1,y2,y3], epochs=1000, verbose=2)
 print('acc:', model.evaluate(x, [y1,y2,y3], verbose=0))
 # acc: [483.4224853515625, 433.32593, 4.404439, 45.69212, 16.087534, 1.5452023, 5.5819106]

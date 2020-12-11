@@ -251,29 +251,23 @@ def model_word2vec_nltk(x, y, ids, x_test):
 
     # ----------------------------------------- #
 
-    # 학습 데이터에 대해서는 stemming, 불용어 처리 등을 적용했는데
-    # 여기서는 하지 않았기 때문에 서로 다른 토큰을 사용하게 됐기 때문에 결과가 나오지 않음
-    # acc: 0.58
-    make_submission_for_word2vec(
-        ids, x_test, lr, word2vec, n_features, idx2word,
-        'popcorn_model/word2vec_nltk.csv'
-    )
+    # 학습 데이터에 대해서는 stemming, 불용어 처리 등을 적용했기 때문에
+    # 검사 데이터와 토큰에 있어서 많이 다름에도 불구하고 비슷한 결과를 보여줌
+    # acc : 0.8544
+    # make_submission_for_word2vec(
+    #     ids, x_test, lr, word2vec, n_features, idx2word,
+    #     'popcorn_model/word2vec_nltk.csv'
+    # )
 
     # 문제
     # 앞에서 사용한 전처리 코드를 사용해서 서브미션 파일을 만드세요
-    # sents = [tokenizer.tokenize(s.lower()) for s in x_test]
-    # sents_stem = [[st.stem(w) for w in s] for s in sents]
-    # sents_token = [[w for w in s if w not in stop_words] for s in sents_stem]
-    #
-    #
-    # x_test = [s.lower().split() for s in x_test]
-    #
-    # features = [make_features_for_word2vec(
-    #     tokens, word2vec, n_features, idx2word) for tokens in x_test]
-    # x_test = np.vstack(features)
-    #
-    # preds = lr.predict(x_test)
-    # make_submission(ids, preds, 'popcorn_model/word2vec_nltk.csv')
+    sents = [tokenizer.tokenize(s.lower()) for s in x_test]
+    sents_stem = [[st.stem(w) for w in s] for s in sents]
+    sents_token = [[w for w in s if w not in stop_words] for s in sents_stem]
+    x_test = sents_token
+
+    preds = lr.predict(x_test)
+    make_submission(ids, preds, 'popcorn_model/word2vec_nltk.csv')
 
 
 popcorn = pd.read_csv('popcorn/labeledTrainData.tsv',
@@ -304,5 +298,5 @@ model_word2vec_nltk(x, y, ids, x_test)
 # baseline: 0.8596
 # tfidf   : 0.8742
 # word2vec: 0.8228
-# nltk    :
+# nltk    : 0.8544
 

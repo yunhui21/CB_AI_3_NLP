@@ -265,17 +265,17 @@ def model_word2vec_nltk(x, y, ids, x_test):
     print('acc:', lr.score(x_valid, y_valid))
     # ------------------------------------------------------------------------- #
 
-    make_submission_for_word2vec(
-        ids, x_test, lr, word2vec, n_features, idx2word,
-        'popcorn_model/word2vecnltk.csv')
+    # make_submission_for_word2vec(
+    #     ids, x_test, lr, word2vec, n_features, idx2word,
+    #     'popcorn_model/word2vecnltk.csv')
 
-    # sent = [tokenizer.tokenize(s.lower()) for s in x]
-    # sent_stem = [[st.stem(w) for w in s] for s in sent]
-    # sent_token = [[w for w in s if w not in stop_words] for s in sent_stem]
-
+    sent = [tokenizer.tokenize(s.lower()) for s in x]
+    sent_stem = [[st.stem(w) for w in s] for s in sent]
+    sent_token = [[w for w in s if w not in stop_words] for s in sent_stem]
+    x_test = sent_stem
     #
-    # preds = lr.predict(x_test)
-    # make_submission(ids, preds, 'popcorn_model/word2vec.csv')
+    preds = lr.predict(x_test)
+    make_submission(ids, preds, 'popcorn_model/word2vecnltk.csv')
 
 
 

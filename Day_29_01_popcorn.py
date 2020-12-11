@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import gensim
 import nltk
 import pandas as pd
+# nltk.download('stopwords')
 
 def tokenizing_and_padding(x, vocab_size, seq_len):
     tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=vocab_size)
@@ -40,6 +41,7 @@ def make_submission(idx, preds_bool, file_path):
         f.write('{},{}\n'.format(i, result))
     f.close()
 
+
 def make_submission_for_deep(ids, x_test, model, tokenizer, seq_len, file_path):
     x_test = tokenizer.texts_to_sequences(x_test)  # text를 sequence 숫자로 변환
     x_test = tf.keras.preprocessing.sequence.pad_sequences(x, maxlen=seq_len)
@@ -49,6 +51,33 @@ def make_submission_for_deep(ids, x_test, model, tokenizer, seq_len, file_path):
     preds_bool = np.int32(preds_arg > 0.5)
 
     make_submission(ids, preds_bool, 'popcorn_model/baseline.csv')
+
+
+def make_submission_for_word2vec(ids, x_test, model, word2vec, n_features, idx2word, file_path):
+    # 문제
+    # 위의 코드를 사용해서 서브미션 파일을 만드세요.
+    x_test = [s.lower().split() for s in x_test]  # text를 sequence 숫자로 변환
+    features = [make_features_for_word2vec(
+        tokens, word2vec, n_features, idx2word) for tokens in x_test]
+    x_test = np.vstack(features)
+
+    # x_test = lr.fit_transform(x_test)
+    preds = model.predict(x_test)
+    make_submission(ids, preds, file_path)
+
+# 사용 모델 : word2vec, word2vec_nltk
+
+def make_features_for_word2vec(tokens, word2vec, n_features, idx2word):
+    binds , n_words  = np.zeros(n_features), 0
+    # tokens:[the, in, happy, in]  인덱스 안에 들어있다면 딕셔너리 표기법, 숫자로 표기,
+    for w in tokens:
+        if w in idx2word:
+            binds += word2vec.wv[w]
+            n_words += 1
+
+    return binds/(n_words if n_words > 0 else 1)
+    # : RuntimeWarning: invalid value encountered in true_divide return binds/n_words
+
 
 def model_baseline(x, y, ids, x_test):
     vocab_size, seq_len, n_feature = 2000, 200, 100
@@ -118,22 +147,39 @@ def model_tfidf(x, y, ids, x_test):
     #
     make_submission(ids, preds, 'popcorn_model/tfidf.csv')
 
-
+# gensim
 def model_word2vec(x, y, ids, x_test):
-    vocab_size, seq_len, n_feature = 2000, 200, 100
-    x, tokenizer = tokenizing_and_padding(x, vocab_size, seq_len)
-    # print(x.shape)      # (1000, 200)
-    # 사용해서는 안되지만, tf-idf가 문자열 토큰을 필요로 하기 때문에.
-    # tokenizing_and_padding 함수에서 texts_to_sequences 함수를 호출했기 때문에 성능이 좋지 않다.
-    x = tokenizer.sequences_to_texts(x)
+    x = [s.lower().split() for s in x]
 
-    tfidf = feature_extraction.text.TfidfVectorizer(
-        min_df=0.0, analyzer='word', sublinear_tf=True,
-        ngram_range=(1, 3), max_features=5000
+    n_features = 100
+    word2vec = gensim.models.Word2Vec(
+        x, workers=4, size=n_features,
+        min_count=40, window=10, sample=0.001
     )
-    x = tfidf.fit_transform(x)
-    # print(x.shape)      # (1000, 5000)
+    print(word2vec)     # Word2Vec(vocab=9207, size=100, alpha=0.025)
 
+
+    # print(word2vec.wv.index2word)           #
+    # print(len(word2vec.wv.index2word))      # 534
+
+    # list -> set : 검색 성능 향상
+    # list 안에 features들이 들어가 있다.
+    idx2word = set(word2vec.wv.index2word)
+
+    features = [make_features_for_word2vec(
+        tokens, word2vec, n_features, idx2word) for tokens in x]
+
+    x = np.vstack(features) # 2차원으로 변환
+    print(x.shape)      #
+
+    # review 1 개 :
+    # the, in, happy
+    # the   : 1 0 0 0 0
+    # in    : 0 0 1 0 0
+    # happy : 0 0 0 1 0
+    # in    : 0 0 1 0 0
+    # ------------------
+    #         1 0 2 1 0 / 4 원핫스타일
 
     data = model_selection.train_test_split(x, y, train_size=0.8, shuffle=False)
     x_train, x_valid, y_train, y_valid = data # submission 제출하는게 문제이므로 test는 없음
@@ -142,21 +188,95 @@ def model_word2vec(x, y, ids, x_test):
     lr = linear_model.LogisticRegression(class_weight= 'balanced' )
     lr.fit(x_train, y_train)
     print('acc:', lr.score(x_valid, y_valid))
+    # ------------------------------------------------------------------------- #
 
-    #----------------------------------------------------------------#
-    x_test = tokenizer.texts_to_sequences(x_test)  # text를 sequence 숫자로 변환
-    x_test = tf.keras.preprocessing.sequence.pad_sequences(x_test, maxlen=seq_len)
-
-    x_test = tokenizer.sequences_to_texts(x_test)
-    x_test = tfidf.fit_transform(x_test)
-
-    preds = lr.predict(x_test)
-    # print(preds.shape)
-    # print(preds[:5])
-    # preds_arg = preds.reshape(-1)
-    # preds_bool = np.int32(preds_arg > 0.5)
+    # 문제
+    # 위의 코드를 사용해서 서브미션 파일을 만드세요.
+    # features = [make_features_for_word2vec(
+    #         tokens, word2vec, n_features, idx2word) for tokens in x]
     #
-    make_submission(ids, preds, 'popcorn_model/tfidf.csv')
+    #     x = np.vstack(features) # 2차원으로 변환
+
+    # 문제
+    # 앞에서 사용한 전처리 코드를 사용해서 서브미션 파일을 만드세요.
+
+    # x_test = lr.fit_transform(x_test)
+    preds = lr.predict(x_test)
+    make_submission(ids, preds, 'popcorn_model/word2vec.csv')
+
+# nltk
+def model_word2vec_nltk(x, y, ids, x_test):
+    # x = [s.lower().split() for s in x]
+
+    tokenizer = nltk.RegexpTokenizer(r'\w+')
+    sent      = [tokenizer.tokenize(s.lower()) for s in x]
+    # print(sent[1]) # ['the', 'classic', 'war', 'of', 'the', 'worlds',...
+
+    st = nltk.stem.PorterStemmer()
+    sent_stem = [[st.stem(w) for w in s] for s in sent]
+    # stemming 후 다 흩어져버림
+    # 문제
+
+    stop_words = nltk.corpus.stopwords.words('english')
+    sent_token = [[ w for w in s if w not in stop_words] for s in sent_stem]
+    # print(sent_token[1]) # ['classic', 'war', 'world', 'timothi', 'hine', 'veri',
+
+    x = sent_token
+
+    # --------------------------------- #
+    # 아래 코드는 model_word2vec 함수와 100% 동일
+
+    n_features = 100
+    word2vec = gensim.models.Word2Vec(
+        x, workers=4, size=n_features,
+        min_count=40, window=10, sample=0.001
+    )
+    print(word2vec)     # Word2Vec(vocab=9207, size=100, alpha=0.025)
+
+
+    # print(word2vec.wv.index2word)           #
+    # print(len(word2vec.wv.index2word))      # 534
+
+    # list -> set : 검색 성능 향상
+    # list 안에 features들이 들어가 있다.
+    idx2word = set(word2vec.wv.index2word)
+
+    features = [make_features_for_word2vec(
+        tokens, word2vec, n_features, idx2word) for tokens in x]
+
+    x = np.vstack(features) # 2차원으로 변환
+    print(x.shape)      #
+
+    # review 1 개 :
+    # the, in, happy
+    # the   : 1 0 0 0 0
+    # in    : 0 0 1 0 0
+    # happy : 0 0 0 1 0
+    # in    : 0 0 1 0 0
+    # ------------------
+    #         1 0 2 1 0 / 4 원핫스타일
+
+    data = model_selection.train_test_split(x, y, train_size=0.8, shuffle=False)
+    x_train, x_valid, y_train, y_valid = data # submission 제출하는게 문제이므로 test는 없음
+    # ------------------------------------------------------------------------- #
+
+    lr = linear_model.LogisticRegression(class_weight= 'balanced' )
+    lr.fit(x_train, y_train)
+    print('acc:', lr.score(x_valid, y_valid))
+    # ------------------------------------------------------------------------- #
+
+    make_submission_for_word2vec(
+        ids, x_test, lr, word2vec, n_features, idx2word,
+        'popcorn_model/word2vecnltk.csv')
+
+    # sent = [tokenizer.tokenize(s.lower()) for s in x]
+    # sent_stem = [[st.stem(w) for w in s] for s in sent]
+    # sent_token = [[w for w in s if w not in stop_words] for s in sent_stem]
+
+    #
+    # preds = lr.predict(x_test)
+    # make_submission(ids, preds, 'popcorn_model/word2vec.csv')
+
 
 
 
@@ -171,7 +291,7 @@ y = popcorn.sentiment.values.reshape(-1, 1)
 # token의 길이의 분포를 파악한후
 
 n_samples = 1000
-x, y = x[:n_samples], y[:n_samples] # 에러나기전까지는 활성화 한다.
+# x, y = x[:n_samples], y[:n_samples] # 에러나기전까지는 활성화 한다.
 #
 test_set = pd.read_csv('popcorn/testData.tsv',
                       delimiter='\t', index_col=0)
@@ -182,11 +302,14 @@ x_test = test_set.review.values
 
 # model_baseline(x, y, ids, x_test)
 # model_tfidf(x, y, ids, x_test)
-model_word2vec(x, y, ids, x_test)
-
+# model_word2vec(x, y, ids, x_test)
+model_word2vec_nltk(x, y, ids, x_test)
 
 # 1.baseline : loss: 0.1406 - acc: 0.9563 - val_loss: 0.9479 - val_acc: 0.6200
 # 2.baseline_10 : loss: 0.0821 - acc: 0.9712 - val_loss: 0.4775 - val_acc: 0.8572
 
+# baseline :
+# tfidf    :
+# word2vec : acc: 0.8254
 
 

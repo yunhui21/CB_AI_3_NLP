@@ -37,7 +37,7 @@ def make_submission(ids, preds_bool, file_path):
 
     f.write('"id","sentiment"\n')
     for i, result in zip(ids, preds_bool):
-        f.write('"{}",{}\n'.format(i, result))
+        f.write('{},{}\n'.format(i, result))
 
     f.close()
 

@@ -10,7 +10,11 @@ import matplotlib.pyplot as plt
 import gensim
 import nltk
 import pandas as pd
+
 # nltk.download('stopwords')
+# nltk.download('gutenberg')
+# nltk.download('webtext')
+# nltk.download('reuters')
 
 def tokenizing_and_padding(x, vocab_size, seq_len):
     tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=vocab_size)
@@ -50,7 +54,7 @@ def make_submission_for_deep(ids, x_test, model, tokenizer, seq_len, file_path):
     preds_arg = preds.reshape(-1)
     preds_bool = np.int32(preds_arg > 0.5)
 
-    make_submission(ids, preds_bool, 'popcorn_model/baseline.csv')
+    make_submission(ids, preds_bool, file_path)
 
 
 def make_submission_for_word2vec(ids, x_test, model, word2vec, n_features, idx2word, file_path):
@@ -277,8 +281,86 @@ def model_word2vec_nltk(x, y, ids, x_test):
     preds = lr.predict(x_test)
     make_submission(ids, preds, 'popcorn_model/word2vecnltk.csv')
 
+def model_rnn(x, y, ids, x_test):
+    vocab_size, seq_len = 2000, 200
+    x, tokenizer = tokenizing_and_padding(x, vocab_size, seq_len)
+
+    data = model_selection.train_test_split(x, y, train_size=0.8, shuffle=False)
+    x_train, x_valid, y_train, y_valid = data # submission 제출하는게 문제이므로 test는 없음
+    # shuffle이 진행되면 순서가 바뀌어서 검증이
+    # print(x.shape, y.shape)     # (1000, 200) (1000, 1)
+    # ----------------------------------------------------------------------------- #
+    # 문제
+    # 학습하고 정확도를 구하는 나머지 코드를 만드세요.
+
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Input(shape=[seq_len]))
+    model.add(tf.keras.layers.Embedding(vocab_size, 100))  # 입력(2차원), 출력(3차원)
+    # model.add(tf.keras.layers.LSTM(64, return_sequences=True))
+    # model.add(tf.keras.layers.LSTM(64, return_sequences=False))
+    cells = [tf.keras.layers.LSTMCell(64) for _ in range(2)]
+    multi = tf.keras.layers.StackedRNNCells(cells)
+    model.add(tf.keras.layers.RNN(multi))
+    model.add(tf.keras.layers.Dense(64, activation='relu'))
+    model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
 
 
+    model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01),
+                  loss=tf.keras.losses.binary_crossentropy,
+                  metrics=['acc'])
+
+    model.fit(x_train, y_train, batch_size=128, epochs = 10, verbose=2,
+              validation_data=(x_valid, y_valid))
+
+    #----------------------------------------------------------------#
+    make_submission_for_deep(ids, x_test, model, tokenizer, seq_len, 'popcorn_model/rnn.csv')
+
+
+def model_cnn(x, y, ids, x_test):
+    vocab_size, seq_len = 2000, 200
+    x, tokenizer = tokenizing_and_padding(x, vocab_size, seq_len)
+
+    data = model_selection.train_test_split(x, y, train_size=0.8, shuffle=False)
+    x_train, x_valid, y_train, y_valid = data # submission 제출하는게 문제이므로 test는 없음
+    # shuffle이 진행되면 순서가 바뀌어서 검증이
+    # print(x.shape, y.shape)     # (1000, 200) (1000, 1)
+    # ----------------------------------------------------------------------------- #
+    # 문제
+    # 학습하고 정확도를 구하는 나머지 코드를 만드세요.
+
+    input = tf.keras.layers.Input(shape=[seq_len])
+
+    embed = tf.keras.layers.Embedding(vocab_size, 100)(input)
+    embed = tf.keras.layers.Dropout(0.5)(embed)
+
+    conv1 = tf.keras.layers.Conv1D(128, 3, activation='relu')(embed)
+    conv1 = tf.keras.layers.GlobalAvgPool1D()(conv1)
+
+    conv2 = tf.keras.layers.Conv1D(128, 4, activation='relu')(embed)
+    conv2 = tf.keras.layers.GlobalAvgPool1D()(conv2)
+
+    conv3 = tf.keras.layers.Conv1D(128, 5, activation='relu')(embed)
+    conv3 = tf.keras.layers.GlobalAvgPool1D()(conv3)
+
+    concat = tf.keras.layers.concatenate([conv1, conv2, conv3])
+
+    full1 = tf.keras.layers.Dense(256, activation='relu')(concat)
+    full1 = tf.keras.layers.Dropout(0.5)(full1)
+
+    full2 = tf.keras.layers.Dense(1, activation='sigmoid')(full1)
+
+    model = tf.keras.Model(input, concat)
+    model.summary()
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01),
+                  loss=tf.keras.losses.binary_crossentropy,
+                  metrics=['acc'])
+
+    model.fit(x_train, y_train, batch_size=128, epochs = 10, verbose=2,
+              validation_data=(x_valid, y_valid))
+
+    #----------------------------------------------------------------#
+    make_submission_for_deep(ids, x_test, model, tokenizer, seq_len, 'popcorn_model/cnn.csv')
 
 popcorn = pd.read_csv('popcorn/labeledTrainData.tsv',
                       delimiter='\t', index_col=0)
@@ -303,13 +385,16 @@ x_test = test_set.review.values
 # model_baseline(x, y, ids, x_test)
 # model_tfidf(x, y, ids, x_test)
 # model_word2vec(x, y, ids, x_test)
-model_word2vec_nltk(x, y, ids, x_test)
-
+# model_word2vec_nltk(x, y, ids, x_test)
+# model_rnn(x, y, ids, x_test)
+model_cnn(x, y, ids, x_test)
 # 1.baseline : loss: 0.1406 - acc: 0.9563 - val_loss: 0.9479 - val_acc: 0.6200
 # 2.baseline_10 : loss: 0.0821 - acc: 0.9712 - val_loss: 0.4775 - val_acc: 0.8572
 
 # baseline :
 # tfidf    :
-# word2vec : acc: 0.8254
+# word2vec : 0.8254
+# rnn      :
+# cnn      :
 
 

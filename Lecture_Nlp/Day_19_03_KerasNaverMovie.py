@@ -186,8 +186,8 @@ def rnn_model_embedding():
 
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=[max_len]),
-        tf.keras.layers.Embedding(vocab_size, 100),                 # 입력(2차원), 출력(3차원)
-        tf.keras.layers.LSTM(hidden_size, return_sequences=False),
+        tf.keras.layers.Embedding(vocab_size, 100),                 # 입력(2차원), 출력(3차원) 원핫대신 사용
+        tf.keras.layers.LSTM(128, return_sequences=False),
         tf.keras.layers.Dense(1, activation='sigmoid'),
     ])
     model.summary()

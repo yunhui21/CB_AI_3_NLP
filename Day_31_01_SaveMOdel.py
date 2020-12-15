@@ -99,8 +99,9 @@ def save_model_2_bug():
     preds = save_model.predict(x_test)
     preds_arg = np.argmax(preds, axis=1)
     print(preds_arg[:10])
-    print('acc 3:', np.mean(preds_arg == y_test, verbose=0))
+    print('acc 3:', np.mean(preds_arg == y_test))
 
+    # compile 함수를 호출하지 않으면 evaluate 함수는 비정상으로 동작한다.
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.sparse_categorical_crossentropy,
                   metrics=['acc'])

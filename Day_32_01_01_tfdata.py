@@ -66,6 +66,9 @@ def get_abalone_tfdata():
     # print(data.shape) # (4177, 11)
 
     train_size = int(len(data)*0.8)
+    # 가장 좋은 코드이지만, map 함수를 사용하고 싶어서 사용하지 않음.
+    # ds_train = tf.data.Dataset.from_tensor_slices((x,y))
+
 
     # ds_train = tf.data.Dataset.from_tensor_slices(data[:train_size])
     # # for take in ds_train.take(2):
@@ -79,7 +82,7 @@ def get_abalone_tfdata():
     #     #  -0.64189823 -0.60768536 -0.72621157 -0.63821689] 2.0
     #
     # ds_train = ds_train.batch(32, drop_remainder=True)  # 104
-
+#
     ds_train = tf.data.Dataset.from_tensor_slices(data[:train_size])
     ds_train = ds_train.batch(32, drop_remainder=True)  # 104
     # for take in ds_train.take(2):
@@ -166,5 +169,4 @@ def model_abalone_good():
 
 # model_abalone_bad()
 model_abalone_good()
-
 

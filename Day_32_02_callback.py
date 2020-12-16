@@ -15,7 +15,10 @@ def get_cars_sparse():
     cars = pd.read_csv('data/car.data', header = None, names = names)
     # print(cars)
 
-    enc = preprocessing.LabelEncoder()
+    # enc = preprocessing.LabelEncoder()
+    # encoder 1차원
+    enc = preprocessing.LabelBinarizer()
+    # binarizer 2차원
 
     buying   = enc.fit_transform(cars.buying)
     maint    = enc.fit_transform(cars.maint)
@@ -23,9 +26,12 @@ def get_cars_sparse():
     person   = enc.fit_transform(cars.person)
     lug_boot = enc.fit_transform(cars.lug_boot)
     safety   = enc.fit_transform(cars.safety)
-    acc      = enc.fit_transform(cars['acc'])
+    acc      = enc.fit_transform(cars.acc)
+
     # print(buying.shape, maint.shape) # (1728,) (1728,)
-    data = np.transpose([buying, maint, doors, person, lug_boot, safety, acc ])
+    # data = np.transpose([buying, maint, doors, person, lug_boot, safety])
+    data = np.hstack([buying, maint, doors, person, lug_boot, safety ])
+    acc = np.argmax(acc, axis=1)
     print(data.shape) # (1728, 7)
 
     #--------------------------------------------------------#
@@ -53,6 +59,24 @@ def build_model(n_classes):
 
     return model
 
+class EveryBatch(tf.keras.callbacks.Callback):
+    def __init__(self):
+        self.batch_loss = []
+        self.batch_acc  = []
+
+    # def on_batch_begin(self, batch, logs=None):
+    #     print('on_batch_begin', batch, logs)
+    #
+    # def on_batch_end(self, batch, logs=None):
+    #     print('on_batch_end', batch, logs)
+    #
+    #     self.batch_loss.append(logs['loss'])
+    #     self.batch_acc.append(logs['acc'])
+
+    # val_loss가 나오는 것이 아니라 on_batch_end 함수와 동일하게 loss가 나온다.
+    def on_test_batch_end(self, batch, logs=None):
+         print('on_test_batch_end', logs)
+
 ds_train, ds_test = get_cars_sparse()
 model = build_model(4)
 
@@ -65,7 +89,7 @@ checkpoint = tf.keras.callbacks.ModelCheckpoint(
 )
 
 early_stopping = tf.keras.callbacks.EarlyStopping(
-    monitor='val_acc', patience=3
+    monitor='val_acc', patience=5
 )
 
 model.fit(ds_train, epochs=30, verbose=2,
